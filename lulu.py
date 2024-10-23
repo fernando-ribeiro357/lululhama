@@ -59,6 +59,14 @@ def testeira():
     *                                            ██     ██   *
     * (digite 'sair' para encerrar)              ██     ██   *
     **********************************************************
+    
+         /)_(\
+        (o _ o)
+        ( (Y) )
+        (     )
+                
+Eu sou a Lulu Lhama! Pode conversar comigo.
+
           """)
 
 def main():
