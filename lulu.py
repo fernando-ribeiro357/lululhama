@@ -11,7 +11,7 @@ def prompt():
     Função para receber o prompt do usuário e fazer a 
     requisição assíncrona ao chat com o prompt fornecido 
     '''
-    pergunta=input('#>> ')
+    pergunta=input('º_>º ⧼ ')
     if pergunta.lower() != 'sair':
         asyncio.run(chat(pergunta))
         prompt()
@@ -34,10 +34,10 @@ async def chat(pergunta):
     message = {'role': 'user', 'content': pergunta}
     try:
         print(""" 
-         /)__(\
-        ( o _ o)
-        (  (*) )
-        (   ~  )
+         /)_(\
+        (o _ o)
+        ( () )
+        (  ~  )
                 """)
         async for part in await AsyncClient().chat(model='lululhama', messages=[message], stream=True):
             saida = retira_aster(part['message']['content'])
