@@ -34,10 +34,10 @@ async def chat(pergunta):
     message = {'role': 'user', 'content': pergunta}
     try:
         print(""" 
-         /)_(\
+         /)_(\\
         (o _ o)
-        ( () )
-        (  ~  )
+        ( (Y) )
+        (     )
                 """)
         async for part in await AsyncClient().chat(model='lululhama', messages=[message], stream=True):
             saida = retira_aster(part['message']['content'])
