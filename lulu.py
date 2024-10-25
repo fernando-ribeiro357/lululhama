@@ -1,5 +1,3 @@
-#!/home/orangepi/lulullhama/venv/bin/python
-
 import time
 import os
 import re
