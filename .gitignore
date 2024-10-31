@@ -3,6 +3,5 @@ __pycache__/
 *.pyc
 .vscode/
 .env
-
 history/*.txt
 !history/README.md

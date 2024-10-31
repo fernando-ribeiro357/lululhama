@@ -27,8 +27,6 @@ def header():
   ( o __o)
   (  ( Y )
   (      )
-                
-! Pode conversar comigo.
           """)
 
 
@@ -39,12 +37,18 @@ def prompt():
     '''
     try:
         mensagens = []
-        pergunta0 = 'Olá. Eu sou a Lulu Lhama. Qual é o seu nome?'
-        mensagens.append(('assistant', pergunta0))
-        user = input(f'{pergunta0}\n >>> ')        
-        mensagens.append(('user', user))
-        pergunta1 = f'Olá {user}. Vamos conversar.'
-        mensagens.append(('assistant', pergunta1))
+        pergunta0 = 'Olá. Qual é o seu nome?'
+        mensagem = ('assistant', pergunta0)
+        mensagens.append(mensagem)
+        history(mensagem);
+        user = input(f'{pergunta0}\n >>> ')
+        mensagem = ('user', user)
+        mensagens.append(mensagem)
+        history(mensagem)
+        pergunta1 = f'Oi {user}. Vamos conversar.'
+        mensagem = ('assistant', pergunta1)
+        mensagens.append(mensagem)
+        history(mensagem)
         print(f'{pergunta1} \n')
         while True:
             pergunta = input(f'["x": sair]\n{user} >>> ')
@@ -55,18 +59,17 @@ def prompt():
             
             mensagem = ('user', pergunta)
             history(mensagem);
-            mensagens.append(mensagem)
-            # resposta = retira_aster(resposta_bot(mensagens))
+            mensagens.append(mensagem)            
             resposta = resposta_bot(mensagens)
             mensagem = ('assistant', resposta)
             history(mensagem);
             mensagens.append(mensagem)
             print(f'''
-     /)🎀(\\
-    ( o __o)
-    (  ( Y )
-    (      )
-    ''')
+   /)🎀(\\
+  ( o __o)
+  (  ( Y )
+  (      )
+  ''')
             console = Console()
             markdown = Markdown(resposta)
             console.print(markdown)
@@ -78,35 +81,27 @@ def prompt():
 
 def resposta_bot(mensagens):
     # Para utilizar o ChatGroq, é necessário configurar GROQ_API_KEY no .env
-    # chat = ChatGroq(model='llama-3.1-70b-versatile')
+    chat = ChatGroq(model='llama-3.1-70b-versatile')
     # Utilizar as mensagens modelo para passar mensagens do sistema
-    # mensagens_modelo = [('system', 'Seu user é Lulu e você é uma atendente lhama amigável, que fica feliz em ajudar.')]
-    # mensagens_modelo += mensagens
-    chat = ChatOllama(base_url='http://192.168.1.40:11434',model='lululhama')
-    template = ChatPromptTemplate.from_messages(mensagens)
+    mensagens_modelo = [('system', 'Seu nome é Lulu e você é uma atendente lhama amigável, que fica feliz em ajudar.')]
+    mensagens_modelo += mensagens
+    # chat = ChatOllama(base_url='http://192.168.1.40:11434',model='lululhama')
+    template = ChatPromptTemplate.from_messages(mensagens_modelo)
     chain = template | chat
     return chain.invoke({}).content
 
-
-def retira_aster(text):
-    ''' 
-    Função para retirar o caracter '*' do texto fornecido  
-    '''
-    return re.sub('\*', '', text)
-
-
 def history(tupla):    
+    now = datetime.now()
+    data_hora = now.strftime('%Y-%m-%d %H:%M:%S')
+    data = now.strftime('%Y-%m-%d')
+    caminho_do_arquivo = f'./history/{data}.txt'
     try:
-        now = datetime.now()
-        data_hora = now.strftime('%Y-%m-%d %H:%M:%S')
-        data = now.strftime('%Y-%m-%d')
-        caminho_do_arquivo = f'./history/{data}.txt'
-        # Abre o arquivo no modo 'w' (write), que sobrescreve o arquivo se já existir
+        # Abre o arquivo no modo 'a' (append), que escreve no final do arquivo se já existir
         with open(caminho_do_arquivo, 'a') as arquivo:
             # Escreve a variável no arquivo
-            arquivo.write(data_hora + ' : ' + str(tupla) + '\n')
+            arquivo.write(data_hora + '|' + str(tupla) + '\n')            
     except Exception as e:
-        print(f"Ocorreu um erro ao escrever o arquivo: {e}")
+        print(f"Ocorreu um erro ao escrever o arquivo {caminho_do_arquivo}: {e}")
 
 
 def main():
