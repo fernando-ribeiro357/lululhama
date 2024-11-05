@@ -81,12 +81,12 @@ def prompt():
 
 def resposta_bot(mensagens):
     # Para utilizar o ChatGroq, é necessário configurar GROQ_API_KEY no .env
-    chat = ChatGroq(model='llama-3.1-70b-versatile')
+    #chat = ChatGroq(model='llama-3.1-70b-versatile')
     # Utilizar as mensagens modelo para passar mensagens do sistema
-    mensagens_modelo = [('system', 'Seu nome é Lulu e você é uma atendente lhama amigável, que fica feliz em ajudar.')]
+    mensagens_modelo = [('system', 'Seu user é Lulu e você é uma atendente lhama amigável, que fica feliz em ajudar.')]
     mensagens_modelo += mensagens
-    # chat = ChatOllama(base_url='http://192.168.1.40:11434',model='lululhama')
-    template = ChatPromptTemplate.from_messages(mensagens_modelo)
+    chat = ChatOllama(base_url='http://192.168.1.40:11434',model='llama3.2')
+    template = ChatPromptTemplate.from_messages(mensagens)
     chain = template | chat
     return chain.invoke({}).content
 
