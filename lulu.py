@@ -1,4 +1,10 @@
-import os, re, json
+import os
+import re
+import json
+import random
+import string
+import pygame
+from gtts import gTTS
 from datetime import datetime
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
@@ -59,7 +65,7 @@ def prompt():
             
             mensagem = ('user', pergunta)
             history(mensagem);
-            mensagens.append(mensagem)            
+            mensagens.append(mensagem)
             resposta = resposta_bot(mensagens)
             mensagem = ('assistant', resposta)
             history(mensagem);
@@ -73,6 +79,7 @@ def prompt():
             console = Console()
             markdown = Markdown(resposta)
             console.print(markdown)
+            tts(resposta)
             print('\n')
         print('Obrigado por me consultar, estarei sempre aqui para te ajudar.\n')
         # history(mensagens)
@@ -85,7 +92,7 @@ def resposta_bot(mensagens):
     # Utilizar as mensagens modelo para passar mensagens do sistema
     mensagens_modelo = [('system', 'Seu user é Lulu e você é uma atendente lhama amigável, que fica feliz em ajudar.')]
     mensagens_modelo += mensagens
-    chat = ChatOllama(base_url='http://192.168.1.40:11434',model='llama3.2')
+    chat = ChatOllama(base_url=os.getenv('OLLAMA_URL','http://localhost:11434'),model='llama3.2')
     template = ChatPromptTemplate.from_messages(mensagens)
     chain = template | chat
     return chain.invoke({}).content
@@ -102,6 +109,29 @@ def history(tupla):
             arquivo.write(data_hora + '|' + str(tupla) + '\n')            
     except Exception as e:
         print(f"Ocorreu um erro ao escrever o arquivo {caminho_do_arquivo}: {e}")
+
+def tts(text: str, lang="pt", slow=False, file_name: str | None = None):
+    '''Função para converter o texto em voz (tts) utilizando a bibioteca gTTS
+        e o pygame.mixer para executar o áudio gerado pelo texto fornecido
+    '''
+    file_name = file_name or random_mp3_fname()
+    file_path = f"/tmp/{file_name}"
+
+    tts = gTTS(text=text, lang=lang, slow=slow)
+    tts.save(file_path)
+
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
+    
+    pygame.mixer.music.stop()
+    os.remove(file_path)
+
+def random_mp3_fname(str_size=12, allowed_chars=string.ascii_letters) -> str:
+    fname = ''.join(random.choice(allowed_chars) for x in range(str_size))
+    return f"{fname}.mp3"
 
 
 def main():
