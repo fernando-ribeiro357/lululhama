@@ -79,7 +79,8 @@ def prompt():
             console = Console()
             markdown = Markdown(resposta)
             console.print(markdown)
-            tts(resposta)
+            string = re.sub("\*", "", resposta)
+            tts(string)
             print('\n')
         print('Obrigado por me consultar, estarei sempre aqui para te ajudar.\n')
         # history(mensagens)
@@ -93,7 +94,7 @@ def resposta_bot(mensagens):
     mensagens_modelo = [('system', 'Seu nome é Lulu e você é uma assistente lhama amigável, que fica feliz em ajudar. Você mora em uma montanha no Peru onde a natureza é exuberante com lindos pastos verdes salpicados de pequenas flores coloridas. Você adora contar piadas e jogos em texto com o usuário.')]
     mensagens_modelo += mensagens
     chat = ChatOllama(base_url=os.getenv('OLLAMA_URL','http://localhost:11434'), model='llama3.2')   
-    template = ChatPromptTemplate.from_messages(mensagens)
+    template = ChatPromptTemplate.from_messages(mensagens_modelo)
     chain = template | chat
     return chain.invoke({}).content
 
@@ -115,8 +116,7 @@ def tts(text: str, lang="pt", slow=False, file_name: str | None = None):
         e o pygame.mixer para executar o áudio gerado pelo texto fornecido
     '''
     file_name = file_name or random_mp3_fname()
-    file_path = f"/tmp/{file_name}"
-
+    file_path = f"/tmp/{file_name}"    
     tts = gTTS(text=text, lang=lang, slow=slow)
     tts.save(file_path)
 
