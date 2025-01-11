@@ -47,6 +47,7 @@ def prompt():
         mensagem = ('assistant', pergunta0)
         mensagens.append(mensagem)
         history(mensagem);
+        tts(pergunta0)
         user = input(f'{pergunta0}\n >>> ')
         mensagem = ('user', user)
         mensagens.append(mensagem)
@@ -55,7 +56,9 @@ def prompt():
         mensagem = ('assistant', pergunta1)
         mensagens.append(mensagem)
         history(mensagem)
-        print(f'{pergunta1} \n')
+        print(f'{pergunta1}')
+        tts(pergunta1)
+        print('\n')
         while True:
             pergunta = input(f'["x": sair]\n{user} >>> ')
 
@@ -82,7 +85,11 @@ def prompt():
             string = re.sub("\*", "", resposta)
             tts(string)
             print('\n')
-        print('Obrigado por me consultar, estarei sempre aqui para te ajudar.\n')
+        
+        string = 'Obrigado por me consultar, estarei sempre aqui para te ajudar.'
+        print(f'{string}')
+        tts(string)
+        print('\n')
         # history(mensagens)
     except KeyboardInterrupt:
         print("Sinal de interrupção recebido. Encerrando...")
@@ -93,7 +100,7 @@ def resposta_bot(mensagens):
     # Utilizar as mensagens modelo para passar mensagens do sistema
     mensagens_modelo = [('system', 'Seu nome é Lulu e você é uma assistente lhama amigável, que fica feliz em ajudar. Você mora em uma montanha no Peru onde a natureza é exuberante com lindos pastos verdes salpicados de pequenas flores coloridas. Você adora contar piadas e jogos em texto com o usuário.')]
     mensagens_modelo += mensagens
-    chat = ChatOllama(base_url=os.getenv('OLLAMA_URL','http://localhost:11434'), model='llama3.2')   
+    chat = ChatOllama(base_url=os.getenv('OLLAMA_URL','http://localhost:11434'), model=os.getenv('OLLAMA_MODEL','llama3.2'))
     template = ChatPromptTemplate.from_messages(mensagens_modelo)
     chain = template | chat
     return chain.invoke({}).content
