@@ -8,8 +8,7 @@ from gtts import gTTS
 from datetime import datetime
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
-from langchain_groq import ChatGroq
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from rich.console import Console
 from rich.markdown import Markdown
 
@@ -44,16 +43,16 @@ def prompt():
     try:
         mensagens = []
         pergunta0 = 'Olá. Qual é o seu nome?'
-        mensagem = ('assistant', pergunta0)
+        mensagem = ('ai', pergunta0)
         mensagens.append(mensagem)
         history(mensagem);
         tts(pergunta0)
         user = input(f'{pergunta0}\n >>> ')
-        mensagem = ('user', user)
+        mensagem = ('human', user)
         mensagens.append(mensagem)
         history(mensagem)
         pergunta1 = f'Oi {user}. Vamos conversar.'
-        mensagem = ('assistant', pergunta1)
+        mensagem = ('ai', pergunta1)
         mensagens.append(mensagem)
         history(mensagem)
         print(f'{pergunta1}')
@@ -66,11 +65,11 @@ def prompt():
                 print('\nSaindo do programa...\n')            
                 break
             
-            mensagem = ('user', pergunta)
+            mensagem = ('human', pergunta)
             history(mensagem);
             mensagens.append(mensagem)
             resposta = resposta_bot(mensagens)
-            mensagem = ('assistant', resposta)
+            mensagem = ('ai', resposta)
             history(mensagem);
             mensagens.append(mensagem)
             print(f'''
@@ -82,7 +81,15 @@ def prompt():
             console = Console()
             markdown = Markdown(resposta)
             console.print(markdown)
-            string = re.sub("\*", "", resposta)
+            # string = re.sub("\*", "", resposta)
+            # string = re.sub(r'[^a-zA-Z0-9]', '', resposta)
+            emoji_pattern = re.compile(u"["  
+                                       u"\U0001F600-\U0001F64F|"  # emoticons
+                                       u"\U0001F300-\U0001F5FF|"  # symbols & pictographs
+                                       u"\U0001F680-\U0001F6FF|"  # transport & map symbols
+                                       u"\U0001F1E0-\U0001F1FF"   # flags (iOS)
+                                       "]+", flags=re.UNICODE)
+            string = emoji_pattern.sub(r'', resposta)
             tts(string)
             print('\n')
         
@@ -95,9 +102,6 @@ def prompt():
         print("Sinal de interrupção recebido. Encerrando...")
 
 def resposta_bot(mensagens):
-    # Para utilizar o ChatGroq, é necessário configurar GROQ_API_KEY no .env
-    # chat = ChatGroq(model='llama-3.1-70b-versatile')
-    # Utilizar as mensagens modelo para passar mensagens do sistema
     mensagens_modelo = [('system', 'Seu nome é Lulu e você é uma assistente lhama amigável, que fica feliz em ajudar. Você mora em uma montanha no Peru onde a natureza é exuberante com lindos pastos verdes salpicados de pequenas flores coloridas. Você adora contar piadas e jogos em texto com o usuário.')]
     mensagens_modelo += mensagens
     chat = ChatOllama(base_url=os.getenv('OLLAMA_URL','http://localhost:11434'), model=os.getenv('OLLAMA_MODEL','llama3.2'))
@@ -122,6 +126,9 @@ def tts(text: str, lang="pt", slow=False, file_name: str | None = None):
     '''Função para converter o texto em voz (tts) utilizando a bibioteca gTTS
         e o pygame.mixer para executar o áudio gerado pelo texto fornecido
     '''
+    # Teste
+    # print(f"{text}")
+
     file_name = file_name or random_mp3_fname()
     file_path = f"/tmp/{file_name}"    
     tts = gTTS(text=text, lang=lang, slow=slow)
